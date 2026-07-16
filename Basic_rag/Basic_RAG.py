@@ -1,7 +1,8 @@
 import os
 from groq import Groq
+import time
 def load_file():
-    with open("C:/Users/nani3/Desktop/deep_learning projects/Ai.txt",'r') as f:  
+    with open("C:/Users/nani3/Desktop/deep_learning projects/Basic_rag/Ai.txt",'r') as f:  
         file=f.read()
     return file
 def chunking(file,chunk_size=300, overlap=50):
@@ -35,6 +36,9 @@ def relevent_chunks(question,chunks,min_score):
     return best_chunk
 
 def model(question,r_chunk):
+    time_n= time.time()
+
+
     client=Groq(api_key=os.getenv("groq_api_key"))
     responce= client.chat.completions.create(
         model="llama-3.1-8b-instant",
@@ -47,7 +51,11 @@ def model(question,r_chunk):
         max_completion_tokens=512,
 
     )
-    return responce.choices[0].message.content
+    
+    res=responce.choices[0].message.content
+    stop_t=time.time()
+    t= float(stop_t-time_n)
+    return res,t
     
 if __name__== '__main__':
     print("Loading document...\n")
@@ -61,9 +69,10 @@ if __name__== '__main__':
     if r_chunk is None:
         print("Sorry, the answer is not present in the document.")
         exit()
-    model_answer=model(question,r_chunk)
+    model_answer,t=model(question,r_chunk)
     print("Ai generated answer is  ------>> \n")
     print(model_answer)
+    print(t)
 
     
     
