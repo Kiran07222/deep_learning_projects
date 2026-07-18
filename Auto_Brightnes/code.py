@@ -10,22 +10,20 @@ brightness_history = []
 try:
     while True:
 
-        # Skip a few frames
-        for _ in range(5):
-            success, image = camera.read()
+    
+        success, image = camera.read()
+        camera.release()
 
-        if not success:
-            print("Camera Error")
-            time.sleep(10)
-            continue
+        if  success:
+            print("Camera works")
+        else:
+            print("camera not workds")
+            break
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         b = np.mean(gray)
 
         brightness_history.append(b)
-        if len(brightness_history) > 5:
-            brightness_history.pop(0)
-
         avg_brightness = np.mean(brightness_history)
 
         target = int((avg_brightness / 255) * 100)
@@ -40,12 +38,7 @@ try:
             f"Ambient: {avg_brightness:.1f} | "
             f"Current: {current}% | "
             f"Target: {target}%"
-        )
-
-        time.sleep(300)   # 5 minutes
+        )  
 
 except KeyboardInterrupt:
     print("Stopped.")
-
-finally:
-    camera.release()
